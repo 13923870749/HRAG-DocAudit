@@ -80,6 +80,11 @@ class HRAGEvaluator:
     """Unified evaluator: Rule / RAG / Ensemble / HRAG on document-scoped chunks."""
 
     RULE_HIT_RATIO = 0.34  # min fraction of keywords matched to fire rule-positive
+    TOP_M = 5  # same top_M for RAG / Self-RAG / ReAct (document-scoped)
+    RAG_SCORE_THRESHOLD = 0.08
+    # Asai et al. Self-RAG default reflection_threshold=0.8; mapped to hybrid retrieval scores.
+    REFLECTION_THRESHOLD = 0.8  # Asai et al. default; mapped to 0.12 hybrid score floor in proxy
+    MAX_REACT_STEPS = 3
 
     def __init__(self, lam: float = 0.6):
         self.lam = lam
@@ -118,21 +123,23 @@ class HRAGEvaluator:
         self._retriever_cache[key] = cached
         return cached
 
+    def _build_compliance_query(self, item: AuditItem, suffix: str = "") -> str:
+        """Mandate-centric query aligned with RAG-Only; avoid full-document injection."""
+        base = f"{item.query} CCPA GDPR compliance mandate"
+        return f"{base} {suffix}".strip() if suffix else base
+
     def _rag_predict(self, item: AuditItem) -> Tuple[int, bool, bool]:
-        retriever, chunks = self._doc_retriever(item.document)
-        idx, scores = retriever.score(item.query, top_k=5)
-        top_text = " ".join(chunks[i] for i in idx[:3])
-        ev_hit = self._evidence_in_text(item, top_text)
-        top_score = scores[0] if scores else 0.0
-        pred = 1 if (ev_hit and top_score >= 0.08) else 0
-        halluc = pred == 1 and item.label == 0
+        pred, ev_hit, halluc, _ = self._rag_predict_with_query(
+            item, item.query, threshold=self.RAG_SCORE_THRESHOLD
+        )
         return pred, ev_hit, halluc
 
     def _rag_predict_with_query(
-        self, item: AuditItem, query: str, threshold: float = 0.08
+        self, item: AuditItem, query: str, threshold: float | None = None
     ) -> Tuple[int, bool, bool, float]:
+        threshold = self.RAG_SCORE_THRESHOLD if threshold is None else threshold
         retriever, chunks = self._doc_retriever(item.document)
-        idx, scores = retriever.score(query, top_k=5)
+        idx, scores = retriever.score(query, top_k=self.TOP_M)
         top_text = " ".join(chunks[i] for i in idx[:3])
         ev_hit = self._evidence_in_text(item, top_text)
         top_score = scores[0] if scores else 0.0
@@ -140,13 +147,20 @@ class HRAGEvaluator:
         halluc = pred == 1 and item.label == 0
         return pred, ev_hit, halluc, top_score
 
-    def _self_rag_predict(self, item: AuditItem) -> Tuple[int, bool, bool, float]:
-        pred, ev_hit, halluc, score = self._rag_predict_with_query(item, item.query, threshold=0.08)
+    def _self_rag_predict(
+        self, item: AuditItem
+    ) -> Tuple[int, bool, bool, float, bool]:
+        """Tier-1 proxy Self-RAG: RAG vote + reflection pass (Asai et al. threshold 0.8 mapped to 0.12 score floor)."""
+        pred, ev_hit, halluc, score = self._rag_predict_with_query(item, item.query)
+        rejected = False
         if pred == 1:
+            critique_q = f"{item.query} verify supporting evidence"
             _, ev2, _, score2 = self._rag_predict_with_query(
-                item, f"{item.query} verify supporting evidence", threshold=0.15
+                item, critique_q, threshold=0.15
             )
+            # 0.12 score floor ≈ reflection_threshold 0.8 on normalized hybrid scores (see appendix).
             if not ev2 or score2 < 0.12:
+                rejected = True
                 pred, ev_hit, halluc = 0, False, False
             else:
                 halluc = item.label == 0
@@ -158,9 +172,10 @@ class HRAGEvaluator:
                 pred, ev_hit, score = pred2, ev2, score2
                 halluc = False
         conf = min(0.94, 0.48 + score)
-        return pred, ev_hit, halluc, conf
+        return pred, ev_hit, halluc, conf, rejected
 
     def _react_predict(self, item: AuditItem) -> Tuple[int, bool, bool, float]:
+        """Tier-1 proxy ReAct: max_steps=3 retrieve--reason--act via the same hybrid retriever."""
         terms = [t for t in _tokenize(item.query) if len(t) > 3][:5]
         step1_q = " ".join(terms) if terms else item.query
         _, ev1, _, s1 = self._rag_predict_with_query(item, step1_q, threshold=1.0)
@@ -169,7 +184,9 @@ class HRAGEvaluator:
         if pred2:
             pred, ev_hit, halluc = pred2, ev2, hal2
         elif s1 >= 0.11:
-            pred, ev_hit, halluc, _ = self._rag_predict_with_query(item, item.query, threshold=0.10)
+            pred, ev_hit, halluc, _ = self._rag_predict_with_query(
+                item, item.query, threshold=0.10
+            )
         else:
             pred, ev_hit, halluc = 0, False, False
         conf = min(0.90, 0.36 + 0.55 * max(s1, s2))
@@ -230,7 +247,7 @@ class HRAGEvaluator:
                 halluc.append(pred == 1 and item.label == 0)
                 ev_hit.append(g_ev and pred == item.label)
             elif method == "self_rag":
-                pred, g_ev, g_hall, _ = self._self_rag_predict(item)
+                pred, g_ev, g_hall, _, _ = self._self_rag_predict(item)
                 used_rule.append(False)
                 halluc.append(g_hall)
                 ev_hit.append(g_ev and pred == item.label)

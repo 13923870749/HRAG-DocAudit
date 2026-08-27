@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
-# Export anonymized replication bundle for https://anonymous.4open.science/r/HRAG-DocAudit
+# Export anonymized replication bundle for https://anonymous.4open.science/r/HRAG-DocAudit-D8AE
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 EXPORT="${ROOT}/../HRAG-DocAudit-export"
 PAPER="$(cd "$ROOT/../.." && pwd)"
 
-rm -rf "$EXPORT"
-mkdir -p "$EXPORT/replication" "$EXPORT/manuscript/figures/data"
+mkdir -p "$EXPORT/replication" "$EXPORT/manuscript/figures/data" "$EXPORT/manuscript/sections"
 
 echo "==> Copy replication code (no raw CNAS reports)"
-rsync -a --exclude '.venv' --exclude '__pycache__' --exclude 'data/c3pa' \
+rsync -a --delete --exclude '.venv' --exclude '__pycache__' --exclude 'data/c3pa' \
   --exclude 'data/contract-nli' --exclude 'data/cnas_deidentified' \
   --exclude 'data/contract-nli/raw' --exclude 'data/contract-nli/_repo' \
   --exclude '*.zip' \
@@ -44,7 +43,7 @@ python3 scripts/generate_calibration_curve.py
 | `replication/run_c3pa.py` | C3PA Tier-1 evaluation |
 | `replication/run_contractnli.py` | ContractNLI Tier-1 evaluation |
 | `replication/run_cnas.py` | CNAS de-identified hold-out proxy |
-| `replication/run_tier2_baselines.py` | Self-RAG / ReAct baseline calibration |
+| `replication/run_tier2_baselines.py` | Self-RAG / ReAct C3PA proxy baselines |
 | `replication/hrag_eval/` | Core evaluator (Rule / RAG / Ensemble / HRAG / Self-RAG / ReAct) |
 | `replication/data/cnas_deidentified_public/` | 523 de-identified audit items (no client text) |
 | `replication/config/rules_cnas.json` | CNAS rule definitions (Supplementary Table S1) |
@@ -59,6 +58,12 @@ Liu H, Lei Q, Feng R. Priority-cascaded hybrid RAG for automated compliance audi
 EOF
 
 cp "$ROOT/../manuscript/figures/data/public_benchmarks.csv" "$EXPORT/manuscript/figures/data/" 2>/dev/null || true
+cp "$ROOT/../manuscript/figures/data/cnas_deployment.csv" "$EXPORT/manuscript/figures/data/" 2>/dev/null || true
+cp "$ROOT/../manuscript/figures/data/lambda_ablation.csv" "$EXPORT/manuscript/figures/data/" 2>/dev/null || true
+cp "$ROOT/../manuscript/figures/data-manifest.md" "$EXPORT/manuscript/figures/" 2>/dev/null || true
+cp "$ROOT/../manuscript/figures/generate_figures.py" "$EXPORT/manuscript/figures/" 2>/dev/null || true
+mkdir -p "$EXPORT/manuscript/sections"
+rsync -a "$ROOT/../manuscript/sections/" "$EXPORT/manuscript/sections/"
 cp "$ROOT/config/deployment_anchor.json" "$EXPORT/replication/config/" 2>/dev/null || true
 
 cat > "$EXPORT/replication/LICENSE" <<'EOF'

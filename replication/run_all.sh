@@ -17,6 +17,8 @@ echo "==> Run public + private experiments"
 $PY run_public.py
 $PY run_ablation.py
 $PY run_cnas.py
+$PY run_tier2_baselines.py
+$PY scripts/generate_calibration_curve.py
 
 echo "==> Audit summary"
 $PY scripts/audit_results.py

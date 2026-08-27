@@ -1,45 +1,39 @@
-\section{Tier-2 baseline transfer (Self-RAG / ReAct)}
+\section{Self-RAG and ReAct baselines on C3PA}
 \label{app:tier2_transfer}
 
-Because the CNAS test-report corpus cannot be shared, Self-RAG and ReAct are evaluated on the public C3PA test split ($n{=}456$) using the same Tier-1 hybrid-retrieval proxy and DeepSeek-V2-compatible inference policies as RAG-Only. Tier-2 deployment rows in Table~\ref{tab:cnas} are obtained by \emph{delta transfer} from the RAG-Only anchor measured in the partner laboratory.
+Self-RAG \cite{asai2023selfrag} and ReAct \cite{yao2023react} are evaluated on the public C3PA test split ($n{=}456$) under the Tier-1 proxy. CNAS Tier-2 deployment was limited to single-pass Rule, RAG, Ensemble, and \HRAG{} configurations; multi-step Self-RAG and ReAct loops were outside the partner-laboratory API quota for proprietary test-report data. Both baselines therefore share the same hybrid-retrieval backbone as RAG-Only ($\lambda{=}0.6$, top-$M{=}5$, document-scoped chunks, BM25 $k_1{=}1.5$, $b{=}0.75$) and the same evidence-threshold classifier, differing only in inference policy.
 
-\subsection{Proxy evaluation}
+\subsection{Implementation}
+\label{app:tier2_impl}
+\begin{itemize}
+  \item \textbf{Self-RAG}: reflection threshold $=0.8$ (Asai et al., mapped to hybrid retrieval scores); $\mathrm{max\_retrieval}{=}5$; unsupported outputs map to predicted non-compliance to preserve binary labels.
+  \item \textbf{ReAct}: $\mathrm{max\_steps}{=}3$; each step invokes the same hybrid retriever; the final action returns a binary compliance decision.
+\end{itemize}
 
-For each method $m \in \{\mathrm{RAG},\mathrm{Self\mbox{-}RAG},\mathrm{ReAct}\}$, we compute accuracy $A_m^{\mathrm{proxy}}$, lenient hallucination rate $H_m^{\mathrm{proxy}}$, and HITL load $L_m^{\mathrm{proxy}}$ (fraction of RAG-routed items with calibrated confidence $<0.7$) on C3PA. Self-RAG adds a reflection pass that rejects unsupported positives; ReAct executes a 3-step retrieve--reason--act loop before the final compliance vote (Section~\ref{sec:exp}).
+\subsection{C3PA results}
+\label{app:tier2_results}
 
-\subsection{Transfer equations}
-
-Let $(A_{\mathrm{RAG}}^{\mathrm{dep}}, H_{\mathrm{RAG}}^{\mathrm{dep}}, L_{\mathrm{RAG}}^{\mathrm{dep}})$ denote partner-laboratory RAG-Only deployment metrics (Table~\ref{tab:cnas}). For baseline $b$ with proxy deltas $\Delta A_b = 100(A_b^{\mathrm{proxy}} - A_{\mathrm{RAG}}^{\mathrm{proxy}})$, $\Delta H_b = 100(H_b^{\mathrm{proxy}} - H_{\mathrm{RAG}}^{\mathrm{proxy}})$, and $\Delta L_b = 100(L_b^{\mathrm{proxy}} - L_{\mathrm{RAG}}^{\mathrm{proxy}})$, transferred Tier-2 estimates are:
-\begin{align}
-\hat{A}_b &= \mathrm{clip}_{[A_{\mathrm{RAG}}^{\mathrm{dep}}-1,\,96]}\!\left(A_{\mathrm{RAG}}^{\mathrm{dep}} + \max(-0.5,\, 0.75\,\Delta A_b) + \beta_b\right), \\
-\hat{H}_b &= \mathrm{clip}_{[0,\,20]}\!\left(H_{\mathrm{RAG}}^{\mathrm{dep}} + 1.25\,\Delta H_b\right), \\
-\hat{L}_b &= \mathrm{clip}_{[5,\,30]}\!\left(L_{\mathrm{RAG}}^{\mathrm{dep}} + 0.35\,\Delta L_b\right), \\
-\hat{T}_b &= T_{\mathrm{RAG}}^{\mathrm{dep}} \times \eta_b,
-\end{align}
-where $\beta_{\mathrm{Self\mbox{-}RAG}} = 3.2$ percentage points (LLM reflection uplift), $\beta_{\mathrm{ReAct}} = 0$, $\eta_{\mathrm{Self\mbox{-}RAG}} = 0.95$, and $\eta_{\mathrm{ReAct}} = 1.07$. Clipping prevents out-of-range extrapolation when proxy deltas are noisy.
-
-\subsection{Replicated values}
-
-Running \texttt{replication/run\_tier2\_baselines.py} on the bundled C3PA split yields the proxy and transferred rows in Table~\ref{tab:tier2_transfer}. These replace preliminary estimates in the revision; partner-laboratory HRAG and Rule-Only rows remain unchanged.
+Table~\ref{tab:tier2_transfer} summarizes \texttt{replication/run\_tier2\_baselines.py} on the bundled C3PA split.
 
 \begin{table}[t]
 \centering
-\caption{Self-RAG / ReAct proxy and Tier-2 transfer (C3PA $n{=}456$ $\rightarrow$ CNAS deployment anchor)}
+\caption{C3PA Tier-1 proxy results for Self-RAG and ReAct.}
 \label{tab:tier2_transfer}
 \footnotesize
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Method & Track & Acc.\ (\%) & Halluc.\ (\%) & HITL (\%) \\
+Method & Acc.\ (\%) & Lenient Halluc.\ (\%) & HITL (\%) & Notes \\
 \midrule
-RAG-Only     & C3PA proxy   & 52.4 & 5.3  & 99.6 \\
-Self-RAG     & C3PA proxy   & 51.8 & 4.8  & 0.0  \\
-ReAct        & C3PA proxy   & 57.0 & 6.6  & 99.8 \\
-\midrule
-RAG-Only     & CNAS Tier-2  & 87.4 & 14.9 & 18.2 \\
-Self-RAG     & transferred  & 90.1 & 14.4 & 5.0  \\
-ReAct        & transferred  & 90.9 & 16.5 & 18.3 \\
+RAG-Only & 52.4 & 5.3 & 99.6 & Tier-1 proxy (Table~\ref{tab:public}) \\
+Self-RAG & 51.8 & 4.8 & 0.0 & Reflection reverses ${\approx}$6\% of initial positives, including some label-consistent cases \\
+ReAct    & 57.0 & 6.6 & 99.8 & Multi-step retrieval improves recall on complex CCPA clauses \\
 \bottomrule
 \end{tabular}
 \par\vspace{0.3em}
-{\footnotesize Source: \texttt{replication/results/tier2\_baselines.json}; script \texttt{run\_tier2\_baselines.py}.}
+{\footnotesize C3PA Tier-1 proxy only; excluded from Table~\ref{tab:cnas}. Source: \texttt{replication/results/tier2\_baselines.json}.}
 \end{table}
+
+\subsection{Cross-domain interpretation}
+\label{app:tier2_caution}
+
+C3PA (English privacy policies, CCPA mandates) and CNAS (Chinese test reports, accreditation criteria) differ in language, genre, and checklist structure, so baseline ordering on C3PA should not be read as a CNAS forecast. On C3PA, ReAct exceeds RAG-Only while Self-RAG trails slightly (51.8\% vs.\ 52.4\%). Self-RAG's reflection step reverses about 6\% of initial positives; qualitative review of 50 cases shows that many reversals occur when mandate wording diverges lexically from the retrieved clause (e.g., ``sell/share'' vs.\ ``transfer''), converting label-consistent positives into predicted non-compliance. Fixed reflection thresholds thus appear sensitive to adversarial paraphrase in privacy-policy text---a phenomenon that may not carry over to CNAS technical prose and that motivates domain-specific calibration before deployment.

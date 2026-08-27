@@ -1,0 +1,149 @@
+\section{Experiments}
+\label{sec:exp}
+
+We evaluate \HRAG{} under a dual-track protocol. The public track (C3PA, ContractNLI) runs Tier-1 replication on official splits using a deterministic hybrid-retrieval proxy; the private track reports Tier-2 deployment metrics from a CNAS-accredited laboratory LLM pipeline, with Tier-2b hold-out replication validating the temporal split only.
+
+\subsection{Experimental setup}
+
+Table~\ref{tab:datasets} lists the three corpora. C3PA \cite{c3pa2024} links privacy-policy segments to 12 CCPA mandates; ContractNLI \cite{koreeda2021contractnli} provides 607 NDAs with 17 hypotheses each; CNAS is a 2023--2024 partner-laboratory corpus of 87 reports and 523 checklist items labeled by senior auditors.
+
+\begin{table}[t]
+\centering
+\caption{Evaluation corpora and dual-track protocol}
+\label{tab:datasets}
+\small
+\begin{tabular}{@{}lcccp{3.1cm}@{}}
+\toprule
+Dataset & Track & Docs & Items & Domain \\
+\midrule
+C3PA & Public-A & 400 & 4,800 & CCPA privacy audit \\
+ContractNLI & Public-B & 607 & 10,319 & Contract NLI \\
+CNAS reports & Private & 87 & 523 & Accredited test reports \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We compare Rule-Only, RAG-Only (hybrid retrieval, $\lambda=0.6$, document-scoped chunks), Ensemble (OR fusion when a rule signal fires), and \HRAG{} (priority cascade). Self-RAG \cite{asai2023selfrag} and ReAct \cite{yao2023react} are reported in Appendix~\ref{app:tier2_transfer} under the C3PA Tier-1 proxy; they were omitted from CNAS Tier-2 because the partner pipeline did not authorize additional multi-step LLM calls on private reports. Reported metrics include accuracy, macro-F1, lenient hallucination (unsupported positives without valid evidence, excluding rule-routed outputs), evidence hit rate, NDCG@10, and engine conflict rate; strict hallucination (any false positive) appears in \ref{app:hallucination}. McNemar tests compare \HRAG{} against RAG-only on both public tracks ($p<0.01$). On both test splits, \HRAG{} and OR-ensemble produce identical predictions ($p{=}1$).
+
+\subsection{Public-track evaluation (Tier-1)}
+
+Table~\ref{tab:public} and Figure~\ref{fig:public_benchmarks} summarize official test-split results. On C3PA, \HRAG{} matches OR-ensemble on accuracy and eliminates lenient hallucination relative to both OR-ensemble and RAG-only (McNemar vs.\ RAG-only, $p<10^{-36}$); strict false-positive rates for \HRAG{} and OR-ensemble are identical (\ref{app:hallucination}). On ContractNLI, \HRAG{} improves over RAG-only ($p<10^{-12}$) and ties OR-ensemble on accuracy, although OR-ensemble achieves lower overall lenient hallucination by fusing RAG on semantic-only items ($n{=}1681$). On rule-amenable subsets, priority routing sharply raises accuracy over RAG-only on both datasets (Figure~\ref{fig:mechanism_evidence}a).
+
+\begin{table}[t]
+\centering
+\caption{Public-track Tier-1 results on official test splits}
+\label{tab:public}
+\footnotesize
+\adjustbox{max width=\linewidth}{%
+\begin{tabular}{@{}llccccc@{}}
+\toprule
+Dataset & Method & Acc.\ (\%) & Macro-F1 & Halluc.\ (\%) & Evid.\ hit & NDCG@10 \\
+\midrule
+\multirow{4}{*}{C3PA}
+  & Rule-Only    & 89.3 & 0.66 & 0.0 & 67.5 & -- \\
+  & RAG-Only     & 52.4 & 0.42 & 5.3 & 47.4 & -- \\
+  & Ensemble     & 91.7 & 0.70 & 1.8 & 88.4 & -- \\
+  & \textbf{\HRAG{}} & 91.7 & 0.70 & \textbf{0.0} & 70.0 & -- \\
+\midrule
+\multirow{4}{*}{ContractNLI}
+  & Rule-Only    & 68.4 & --   & 0.0  & 0.16 & -- \\
+  & RAG-Only     & 56.8 & --   & 29.1 & 0.46 & 0.869 \\
+  & Ensemble     & 60.9 & --   & \textbf{0.3} & 0.51 & 0.869 \\
+  & \HRAG{}      & 60.9 & --   & 27.8 & 0.50 & 0.869 \\
+\bottomrule
+\end{tabular}%
+}
+\par\vspace{0.4em}
+{\footnotesize Lenient halluc.; C3PA \HRAG{} acc.\ CI [89.0, 94.3]\%.}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig1_public_benchmarks.pdf}
+\caption{Accuracy and lenient hallucination on official public-track test splits.}
+\label{fig:public_benchmarks}
+\end{figure}
+
+\subsection{Private-track deployment (Tier-2)}
+
+Figure~\ref{fig:cnas_deployment} and Table~\ref{tab:cnas} report partner-laboratory deployment metrics for Rule, RAG, Ensemble, and \HRAG{}---the configurations executed on the 87 CNAS reports. These results are not reproduced by the Tier-1 proxy; Tier-2b hold-out accuracy reaches 65.3\%. Manual review of 45 misclassified hold-out reports attributed most errors to \textbf{temporal concept drift} (72\%): 2024 reports adopted the revised CNAS-CL01:2023 clause on ``digital report appendices'', absent from 2022--2023 training material. The rule engine missed the new fields, and the RAG retriever failed to surface updated standard passages because of lexical mismatch. Static rule--RAG pipelines are therefore vulnerable to regulatory version change; cascade routing is best viewed as a controlled gating pattern under stable rule coverage rather than as a temporally invariant auditor. On the in-distribution CNAS deployment set, \HRAG{} reaches 94.3\% accuracy, 4.2\% lenient hallucination, and 8.5\% HITL load---lower human review than RAG-only (18.2\%) while meeting the laboratory's operational review-load target more closely than ensemble fusion.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig3_cnas_deployment.pdf}
+\caption{CNAS Tier-2 deployment metrics for methods executed on the partner corpus: accuracy, lenient hallucination, and HITL load.}
+\label{fig:cnas_deployment}
+\end{figure}
+
+\begin{table}[t]
+\centering
+\caption{CNAS Tier-2 deployment (partner-laboratory LLM pipeline)}
+\label{tab:cnas}
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Method & Acc.\ (\%) & Halluc.\ (\%) & HITL (\%) & Latency (min) \\
+\midrule
+Rule-Only    & 72.4 & 0.0 & 27.6 & 0.8 \\
+RAG-Only     & 87.4 & 14.9 & 18.2 & 4.1 \\
+Ensemble     & 89.1 & 9.7 & 15.4 & 3.6 \\
+\textbf{\HRAG{}} & \textbf{94.3} & \textbf{4.2} & \textbf{8.5} & \textbf{2.3} \\
+\midrule
+Human audit (ref.) & 96.8 & 0.0 & -- & 35.0 \\
+\bottomrule
+\end{tabular}
+\par\vspace{0.3em}
+{\footnotesize Lenient hallucination metric. Self-RAG and ReAct: Appendix~\ref{app:tier2_transfer} (C3PA proxy).}
+\end{table}
+
+\subsection{Ablations and mechanism analysis}
+
+Table~\ref{tab:ablation} ablates CNAS deployment components. Removing priority routing or the rule engine increases both HITL load and lenient hallucination. On Tier-1 data, rule--RAG conflict remains high globally (45.2\% on C3PA; 54.4\% on ContractNLI) and on routed items (46.0\%/32.3\%), yet \HRAG{} removes lenient unsupported positives where OR-ensemble does not (Figure~\ref{fig:mechanism_evidence}b). Validation NDCG@10 peaks at $\lambda=0.9$ on both public tracks (Figure~\ref{fig:mechanism_evidence}c). We retain $\lambda=0.6$ as the default because ContractNLI validation RAG accuracy is unchanged between $\lambda=0.6$ and $\lambda=0.9$ (55.93\%, $n{=}1037$; Figure~\ref{fig:mechanism_evidence}d), so the ranking peak does not improve classification. $\lambda$ was selected on the ContractNLI validation split (English contracts); a dedicated grid on the 20-report CNAS validation hold-out was not feasible under partner API limits. Table~\ref{tab:ablation} nevertheless shows that dense-only retrieval ($\lambda{=}1$) lowers CNAS accuracy from 94.3\% to 91.2\%, supporting a hybrid default over pure dense retrieval. The optimal weight for Chinese technical reports may differ from 0.6; CNAS-specific tuning remains an open empirical question.
+
+\begin{table}[t]
+\centering
+\caption{CNAS deployment ablations (Tier-2)}
+\label{tab:ablation}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Variant & Acc.\ (\%) & Halluc.\ (\%) & HITL (\%) \\
+\midrule
+Full \HRAG{}               & 94.3 & 4.2 & 8.5 \\
+w/o priority (Ensemble)    & 89.1 & 9.7 & 15.4 \\
+w/o hybrid retrieval ($\lambda{=}1$) & 91.2 & 6.8 & 11.2 \\
+w/o confidence tiers       & 93.6 & 5.1 & 19.7 \\
+w/o rule engine            & 87.4 & 14.9 & 18.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\begin{minipage}[t]{0.48\linewidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/fig4a_stratified_accuracy.pdf}
+  \centerline{(a) Rule-amenable subset accuracy}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/fig4b_cascade_conflict.pdf}
+  \centerline{(b) Rule-routed lenient hallucination}
+\end{minipage}
+
+\vspace{0.5em}
+\begin{minipage}[t]{0.48\linewidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/fig4c_lambda_ablation.pdf}
+  \centerline{(c) Validation NDCG@10 versus $\lambda$}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/fig4d_lambda_accuracy.pdf}
+  \centerline{(d) Validation RAG accuracy versus $\lambda$}
+\end{minipage}
+\caption{Tier-1 mechanism analysis: (a)~accuracy on rule-amenable subsets; (b)~lenient hallucination on rule-routed items; (c)~validation NDCG@10 versus $\lambda$; (d)~validation RAG accuracy versus $\lambda$ (ContractNLI $n{=}1037$: 55.93\% at both $\lambda{=}0.6$ and $0.9$). Panel values appear in \ref{app:supp_tables}.}
+\label{fig:mechanism_evidence}
+\end{figure}
+
+Among 30 CNAS deployment errors, the dominant modes were rule--RAG conflict (10), retrieval miss (12), and reasoning error (8), aligning with retrieval- and reasoning-related failure categories reported for LLM systems \cite{huang2023raghallucination,gao2024ragsurvey}.

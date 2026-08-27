@@ -1,0 +1,6 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented \HRAG{}-DocAudit, a priority-cascaded hybrid RAG framework for automated compliance auditing. Tier-1 replication shows large gains on rule-amenable items and significant improvements over RAG-only on both public tracks. The cascade eliminates RAG-origin unsupported positives on rule-routed items (lenient metric), while maintaining comparable strict false-positive rates to ensemble methods, with the added benefit of auditable rule traces and lower HITL load. Tier-2 CNAS deployment reaches 94.3\% accuracy with 8.5\% HITL load under the full LLM pipeline. Cascade routing is therefore a conditional design pattern: gate LLM invocation on rule signals for traceability and stratum-level generative-risk isolation, rather than as a universal substitute for OR-fusion on every item.
+
+However, Tier-2b temporal hold-out accuracy (65.3\%) highlights sensitivity to regulatory version drift. The framework assumes reasonably current rule coverage; maintaining standard-update pipelines is essential for sustained deployment. Future work includes cross-institution CNAS validation, Chinese public regulatory benchmarks, Tier-1b LLM replication on semantic subsets, CNAS-specific $\lambda$ tuning, and integration with regulatory update workflows.

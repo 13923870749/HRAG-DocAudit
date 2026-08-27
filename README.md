@@ -22,7 +22,7 @@ python3 scripts/generate_calibration_curve.py
 | `replication/run_c3pa.py` | C3PA Tier-1 evaluation |
 | `replication/run_contractnli.py` | ContractNLI Tier-1 evaluation |
 | `replication/run_cnas.py` | CNAS de-identified hold-out proxy |
-| `replication/run_tier2_baselines.py` | Self-RAG / ReAct baseline calibration |
+| `replication/run_tier2_baselines.py` | Self-RAG / ReAct C3PA proxy baselines |
 | `replication/hrag_eval/` | Core evaluator (Rule / RAG / Ensemble / HRAG / Self-RAG / ReAct) |
 | `replication/data/cnas_deidentified_public/` | 523 de-identified audit items (no client text) |
 | `replication/config/rules_cnas.json` | CNAS rule definitions (Supplementary Table S1) |

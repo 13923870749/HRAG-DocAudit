@@ -1,0 +1,154 @@
+\section{Methodology}
+\label{sec:method}
+
+\HRAG{}-DocAudit frames compliance auditing as checklist-level binary prediction over $K$ items per document. Three mechanisms work together: (i)~a \emph{priority cascade} that defers to deterministic rules when keyword signals fire; (ii)~document-scoped \emph{hybrid retrieval} plus LLM judgment on uncovered items; and (iii)~confidence-tiered \emph{human-in-the-loop} (HITL) escalation in deployment. Tier-1 open replication tests (i) and (ii); Tier-2 CNAS deployment evaluates the full stack, including (iii).
+
+\subsection{Problem formulation}
+
+\begin{definition}[Compliance audit task]
+Given document representation $x \in \calX$, regulation corpus $\calS$, and rule set $\calR$, predict audit vector $y \in \{0,1\}^K$ for $K$ checklist items, approximating expert labels $y^*$.
+\end{definition}
+
+Each checklist item $k$ is evaluated independently after shared document parsing. Items with active rule signals belong to the rule-covered subspace $\calX_{\mathrm{rule}}$; all others require semantic retrieval and generation. This split reflects accredited-laboratory practice, where format, numeric, and citation checks are rule-amenable, whereas disclosure adequacy and clause interpretation remain semantic \cite{solihin2015rules,zhang2016acc}.
+
+\subsection{Priority cascade and hybrid RAG core}
+
+\begin{definition}[Priority cascade]
+\begin{equation}
+f_{\mathrm{HRAG}}(x)=
+\begin{cases}
+r(x), & x \in \calX_{\mathrm{rule}},\\
+f_{\mathrm{RAG}}(x), & \text{otherwise},
+\end{cases}
+\end{equation}
+where $r(x)$ is a deterministic rule output and $\calX_{\mathrm{rule}}$ is the rule-covered subspace with coverage $\mathrm{Cov}_{\calR}=\Pr[x\in\calX_{\mathrm{rule}}]$.
+\end{definition}
+
+\paragraph{Rule trigger specification.}
+A rule signal for item $k$ fires \emph{iff} any of the following conditions holds: (i)~a compiled regex pattern (e.g., \texttt{r'有效期[为|至]\textbackslash d\{1,2\}年'}, \texttt{r'CNAS-CL01:\textbackslash d\{4\}'}) matches the parsed field value; (ii)~a numeric tolerance check fails (e.g., $|V_{\mathrm{reported}} - V_{\mathrm{standard}}| > 0.05 \times V_{\mathrm{standard}}$); or (iii)~a mandatory field is null. The full list of 12 CNAS regex patterns and 5 tolerance rules is provided in Supplementary Table~S1 (Appendix~\ref{app:supp_tables}).
+
+\begin{definition}[Hybrid RAG engine]
+\begin{equation}
+P_{\mathrm{RAG}}(y|x)=\sum_{z\in\calZ} P_{\mathrm{ret}}(z|x)\,P_{\mathrm{gen}}(y|x,z),
+\end{equation}
+with retrieval quality $Q_{\mathrm{ret}}(x)=\Pr[z=z^*|x]$. Retrieval uses document-scoped candidate set $\calZ(x)\subset\calS$ and hybrid score
+$\mathrm{Score}(q,d)=\lambda\cos(E(q),E(d))+(1-\lambda)\mathrm{BM25}(q,d)$ \cite{robertson2009bm25,karpukhin2020dpr,lewis2020rag}.
+\end{definition}
+
+For item $k$, the query $q_k=\mathrm{BuildQuery}(x_k)$ combines the checklist mandate text with document-local context (section heading, field name, or hypothesis string). Retrieval returns the top-$M$ spans from the same document only, preventing cross-document leakage on C3PA and ContractNLI and matching CNAS report structure.
+
+Table~\ref{tab:baselines} contrasts the inference policies evaluated in Section~\ref{sec:exp}. Under \textbf{OR-Ensemble}, a keyword signal activates the rule vote; when no signal is present, RAG is used, and conflicting predictions are fused by logical OR. \textbf{\HRAG{}} instead always executes the rule output on $\calX_{\mathrm{rule}}$ and never merges a conflicting RAG vote on those items.
+
+\begin{table}[t]
+\centering
+\caption{Inference policies for checklist item $k$}
+\label{tab:baselines}
+\small
+\begin{tabular}{@{}p{2.1cm}p{4.6cm}p{4.8cm}@{}}
+\toprule
+Policy & When rule signal fires & Otherwise \\
+\midrule
+Rule-Only    & $y_k \leftarrow r_k(x)$ & no prediction / abstain \\
+RAG-Only     & ignore rule            & $y_k \leftarrow f_{\mathrm{RAG}}(x_k)$ \\
+OR-Ensemble  & $y_k \leftarrow r_k(x) \lor f_{\mathrm{RAG}}(x_k)$ & $y_k \leftarrow f_{\mathrm{RAG}}(x_k)$ \\
+\textbf{\HRAG{}} & $y_k \leftarrow r_k(x)$ & $y_k \leftarrow f_{\mathrm{RAG}}(x_k)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{proposition}[Rule-only error]
+$E_{\mathrm{rule}}\approx 1-\mathrm{Cov}_{\calR}$ when uncovered items cannot be adjudicated.
+\end{proposition}
+
+\begin{proposition}[RAG-only error]
+Error grows with $(1-Q_{\mathrm{ret}})$ and generation hallucination rate, especially on long-tail semantic items.
+\end{proposition}
+
+\begin{theorem}[Cascade vs ensemble conflict]
+\label{thm:cascade}
+Let $\tilde{f}=\beta f_{\mathrm{rule}}+(1-\beta)f_{\mathrm{RAG}}$ be a linear ensemble.
+Priority cascade sets $f_{\mathrm{HRAG}}=f_{\mathrm{rule}}$ whenever a rule signal fires, avoiding OR-fusion with conflicting RAG votes on rule-routed items \cite{hu2016logicnn}.
+On rule-routed items, our results show that the cascade yields lower \emph{lenient} unsupported-positive rates than OR-ensemble while preserving accuracy on rule-amenable strata relative to RAG-only.
+\end{theorem}
+
+\begin{theorem}[Hybrid retrieval recall union]
+\label{thm:hybrid}
+Let $\calV_{\mathrm{mix}}=\calV_{\mathrm{dense}}\cup\calV_{\mathrm{sparse}}$. Then $\Pr[z^*\in\calV_{\mathrm{mix}}]\ge \max\{\Pr[z^*\in\calV_{\mathrm{dense}}],\Pr[z^*\in\calV_{\mathrm{sparse}}]\}$, motivating dense--sparse fusion for heterogeneous compliance clauses.
+\end{theorem}
+
+Propositions~1--2 and Theorems~1--2 provide interpretive guidance; Section~\ref{sec:exp} evaluates them empirically.
+
+\subsection{Confidence-tiered human oversight}
+
+\begin{definition}[Confidence-tiered HITL]
+Posterior confidence $\mathrm{Conf}(x)=P(y{=}y^*|x,\hat{y},\calS)$ maps to four review tiers: auto-accept $[0.9,1]$, quick confirm $[0.7,0.9)$, focused review $[0.5,0.7)$, and manual handoff $[0,0.5)$.
+\end{definition}
+
+The raw LLM verbalized confidence is recalibrated using \textbf{Platt Scaling} on a 200-item validation set, reducing Expected Calibration Error (ECE) \cite{guo2017calibration} from 0.26 to 0.07. See Appendix~\ref{app:calibration_platt} for the calibration curve.
+
+In Tier-2 deployment, rule-routed items receive $\mathrm{Conf=1}$ and skip human review unless a laboratory policy flag applies. For RAG-routed items, we use the Platt-scaled LLM confidence scores. Table~\ref{tab:hitl} summarizes the operational actions; Tier-1 replication does not simulate these tiers.
+
+\begin{table}[t]
+\centering
+\caption{Confidence-tiered HITL actions (Tier-2 deployment)}
+\label{tab:hitl}
+\small
+\begin{tabular}{@{}clp{6.8cm}@{}}
+\toprule
+Tier & $\mathrm{Conf}$ range & Action \\
+\midrule
+1 & $[0.9,1]$   & Auto-accept; log evidence spans only \\
+2 & $[0.7,0.9)$ & Single-click auditor confirmation \\
+3 & $[0.5,0.7)$ & Focused review of retrieved evidence \\
+4 & $[0,0.5)$   & Full manual adjudication \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Following human-centered AI guidance for high-stakes decision support \cite{shneiderman2020hcai}, the design automates high-confidence bulk checks while directing auditors to ambiguous semantic items.
+
+\subsection{Deployment inference pipeline}
+
+The Tier-2 pipeline comprises five stages: (1)~structure parsing with BERT--CRF field tagging \cite{devlin2019bert,lafferty2001crf}; (2)~deterministic rule auditing over parsed fields; (3)~hybrid retrieval and LLM judgment on uncovered items; (4)~confidence scoring and HITL routing; and (5)~report generation with checklist labels and evidence spans. Figure~\ref{fig:architecture} and Algorithm~\ref{alg:hrag} summarize the end-to-end flow.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/fig0_method_architecture.pdf}
+\caption{Tier-2 deployment pipeline for \HRAG{}-DocAudit. Parsed checklist items route to the rule engine when keyword signals fire; otherwise, the hybrid retrieval process and LLM judgment apply. Confidence scores determine HITL tiers before evidence-linked report generation. Tier-1 replication substitutes TF-IDF retrieval and a threshold classifier (Section~\ref{subsec:tier1}).}
+\label{fig:architecture}
+\end{figure}
+
+\begin{algorithm}[t]
+\caption{\HRAG{}-DocAudit inference (Tier-2 deployment)}
+\label{alg:hrag}
+\small
+\begin{algorithmic}[1]
+\REQUIRE Document $d$, corpus $\calS$, rules $\calR$, hybrid weight $\lambda$
+\ENSURE Labels $y$, confidences $c$, evidence set $E$
+\STATE $x \leftarrow \mathrm{ParseStructure}(d)$
+\FOR{each audit item $k=1..K$}
+  \IF{$x_k \in \calX_{\mathrm{rule}}$}
+    \STATE $y_k \leftarrow r_k(x)$; $c_k \leftarrow 1$; log rule ID in $E$
+  \ELSE
+    \STATE $\calZ_k \leftarrow \mathrm{HybridRetrieve}(q_k,\calS;\lambda)$, $q_k{=}\mathrm{BuildQuery}(x_k)$
+    \STATE $(y_k,c_k) \leftarrow \mathrm{LLM-Judge}(x_k,\calZ_k)$; append spans to $E$
+  \ENDIF
+\ENDFOR
+\STATE Map $c_k$ to HITL tier; return $(y,c,E)$
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Rule engine.} The rule engine encodes mandatory field patterns, numeric tolerances, and citation-format constraints compiled from CNAS-CL01 and test-standard checklists. When a signal fires, item $k$ is treated as rule-covered regardless of any RAG output.
+
+\textbf{Hybrid RAG path.} Sentence-BERT embeddings \cite{reimers2019sentencebert} and BM25 scores are min--max normalized per query before fusion. The LLM receives the retrieved spans and must cite evidence when predicting non-compliance.
+
+\textbf{Evidence trace.} Each prediction $y_k$ is stored with its rule ID or retrieved span offsets, supporting traceability audits in accredited laboratories.
+
+\subsection{Tier-1 replication proxy}
+\label{subsec:tier1}
+
+Public-track replication (\texttt{replication/}) isolates routing and retrieval without the partner-laboratory LLM stack. It replaces Sentence-BERT with TF-IDF vectors in $E(\cdot)$, substitutes an evidence-threshold logistic classifier for $\mathrm{LLM-Judge}$ (compliance is predicted only when the retrieval score exceeds a validation-tuned threshold), and implements CNAS/C3PA/ContractNLI rule signals as keyword regular expressions. The default hybrid weight is $\lambda=0.6$ \cite{robertson2009bm25,karpukhin2020dpr}, retained because ContractNLI validation RAG accuracy is identical at $\lambda=0.6$ and $\lambda=0.9$ (Section~\ref{sec:exp}), and HITL tiers are disabled. The proxy reproduces cascade routing and hybrid retrieval on official splits but not Tier-2 accuracy or latency.
+
+\subsection{Dataset adapters and implementation}
+
+All corpora expose the same checklist interface, $(\text{document},\text{item})\mapsto y_k$. C3PA \cite{c3pa2024} treats each (privacy-policy segment, CCPA mandate) pair as one item, with rules encoding mandatory disclosure fields. ContractNLI \cite{koreeda2021contractnli} treats each (contract, hypothesis) pair as one item; three-way NLI labels map to binary compliance with span evidence. For CNAS, structured test-report fields map to 523 checklist items, of which 12 rules cover 95\% and 26 require semantic RAG. The Tier-1 stack uses Python~3.10, BM25 ($k_1{=}1.5,b{=}0.75$), document-scoped chunks, and $\lambda{=}0.6$. The Tier-2 stack adds Sentence-BERT with a ChromaDB index, a DeepSeek-V2 generator, BERT--CRF parsing, and the HITL policy in Table~\ref{tab:hitl}.

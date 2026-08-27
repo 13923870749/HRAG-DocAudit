@@ -1,0 +1,16 @@
+\section{Confidence calibration}
+\label{app:calibration}
+
+\subsection{Platt scaling and expected calibration error}
+\label{app:calibration_platt}
+
+Raw LLM verbalized confidence scores tend to be over-confident on CNAS semantic items. We fit a Platt-scaling map $g(z)=1/(1+\exp(Az+B))$ on a held-out validation set of 200 RAG-routed predictions, using logistic regression on the raw score $z$ against binary correctness labels. After calibration, the mapped score $\hat{c}=g(z)$ feeds the HITL tiers in Definition~4.
+
+We report Expected Calibration Error (ECE) \cite{guo2017calibration} with 10 equal-width bins over $[0,1]$. Before calibration, ECE$=0.26$; after Platt scaling, ECE$=0.07$. Figure~\ref{fig:calibration_curve} plots bin-wise mean confidence versus empirical accuracy; the recalibrated curve (blue) tracks the ideal diagonal (red dashed) more closely than the raw scores (gray).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\linewidth]{figures/figA1_calibration_curve.pdf}
+\caption{Reliability diagram on the 200-item CNAS validation set. Gray: raw LLM verbalized confidence; blue: Platt-scaled scores; red dashed: perfect calibration ($y=x$).}
+\label{fig:calibration_curve}
+\end{figure}

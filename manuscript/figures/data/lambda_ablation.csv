@@ -1,0 +1,11 @@
+dataset,lambda,ndcg10,rag_accuracy
+C3PA,0.0,0.403,0.425
+C3PA,0.3,0.413,0.439
+C3PA,0.6,0.430,0.433
+C3PA,0.9,0.459,0.453
+C3PA,1.0,0.454,0.461
+ContractNLI,0.0,0.748,0.557
+ContractNLI,0.3,0.768,0.563
+ContractNLI,0.6,0.807,0.559
+ContractNLI,0.9,0.826,0.559
+ContractNLI,1.0,0.796,0.561

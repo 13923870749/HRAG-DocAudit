@@ -1,0 +1,5 @@
+method,accuracy,hallucination,hitl,latency_min
+Rule-Only,72.4,0.0,27.6,0.8
+RAG-Only,87.4,14.9,18.2,4.1
+Ensemble,89.1,9.7,15.4,3.6
+HRAG,94.3,4.2,8.5,2.3

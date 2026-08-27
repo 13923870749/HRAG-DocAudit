@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run Self-RAG / ReAct on C3PA test split and map to Tier-2 deployment table."""
+"""Run Self-RAG / ReAct on C3PA test split (Tier-1 proxy only; no CNAS transfer)."""
 from __future__ import annotations
 
 import json
@@ -11,10 +11,8 @@ sys.path.insert(0, str(ROOT))
 
 from hrag_eval.core import AuditItem, HRAGEvaluator  # noqa: E402
 
-ANCHOR = ROOT / "config" / "deployment_anchor.json"
 C3PA = ROOT / "data" / "c3pa" / "test.jsonl"
 OUT = ROOT / "results" / "tier2_baselines.json"
-FIG_CSV = ROOT.parent / "manuscript" / "figures" / "data" / "cnas_deployment.csv"
 
 
 def load_jsonl(path: Path) -> list[dict]:
@@ -50,7 +48,7 @@ def collect_confidences(ev: HRAGEvaluator, items: list[AuditItem], method: str) 
     confs: list[float] = []
     for item in items:
         if method == "self_rag":
-            _, _, _, conf = ev._self_rag_predict(item)
+            _, _, _, conf, _ = ev._self_rag_predict(item)
         elif method == "react":
             _, _, _, conf = ev._react_predict(item)
         else:
@@ -59,26 +57,29 @@ def collect_confidences(ev: HRAGEvaluator, items: list[AuditItem], method: str) 
     return confs
 
 
-def transfer_to_deployment(
-    rag_proxy: dict,
-    method_proxy: dict,
-    rag_deploy: dict,
-    *,
-    llm_acc_bonus: float,
-    latency_factor: float,
-) -> dict[str, float]:
-    acc_delta = 100.0 * (method_proxy["accuracy"] - rag_proxy["accuracy"])
-    hal_delta = 100.0 * (method_proxy["hallucination_rate"] - rag_proxy["hallucination_rate"])
-    hitl_delta = 100.0 * (method_proxy["hitl_fraction"] - rag_proxy["hitl_fraction"])
-
-    acc = rag_deploy["accuracy"] + max(-0.5, acc_delta * 0.75) + llm_acc_bonus
-    hal = rag_deploy["hallucination"] + hal_delta * 1.25
-    hitl = rag_deploy["hitl"] + hitl_delta * 0.35
+def self_rag_rejection_stats(ev: HRAGEvaluator, items: list[AuditItem]) -> dict[str, float]:
+    """Reflection diagnostics: rejections among initial RAG positives and over all items."""
+    n = len(items)
+    if n == 0:
+        return {
+            "reflection_reject_rate_pct": 0.0,
+            "rejected_correct_pct": 0.0,
+            "reject_among_initial_positives_pct": 0.0,
+        }
+    rejected = rejected_correct = initial_pos = 0
+    for item in items:
+        initial_pred, _, _, _ = ev._rag_predict_with_query(item, item.query)
+        _, _, _, _, was_rejected = ev._self_rag_predict(item)
+        if initial_pred == 1:
+            initial_pos += 1
+            if was_rejected:
+                rejected += 1
+                if item.label == 1:
+                    rejected_correct += 1
     return {
-        "accuracy": round(min(96.0, max(rag_deploy["accuracy"] - 1.0, acc)), 1),
-        "hallucination": round(max(0.0, min(20.0, hal)), 1),
-        "hitl": round(max(5.0, min(30.0, hitl)), 1),
-        "latency_min": round(rag_deploy["latency_min"] * latency_factor, 1),
+        "reflection_reject_rate_pct": pct_rate(rejected / n),
+        "rejected_correct_pct": pct_rate(rejected_correct / n),
+        "reject_among_initial_positives_pct": pct_rate(rejected / initial_pos if initial_pos else 0),
     }
 
 
@@ -86,8 +87,6 @@ def main() -> None:
     if not C3PA.exists():
         raise SystemExit("Missing C3PA test split")
 
-    anchor = json.loads(ANCHOR.read_text(encoding="utf-8"))
-    deploy = anchor["methods"]
     items = to_items(load_jsonl(C3PA))
     ev = HRAGEvaluator(lam=0.6)
 
@@ -99,17 +98,19 @@ def main() -> None:
         summ["hitl_fraction"] = hitl_fraction(res, confs)
         proxy[method] = summ
 
-    calibrated = {
-        "Self-RAG": transfer_to_deployment(
-            proxy["rag"], proxy["self_rag"], deploy["RAG-Only"], llm_acc_bonus=3.2, latency_factor=0.95
-        ),
-        "ReAct": transfer_to_deployment(
-            proxy["rag"], proxy["react"], deploy["RAG-Only"], llm_acc_bonus=0.0, latency_factor=1.07
-        ),
-    }
+    self_rag_diag = self_rag_rejection_stats(ev, items)
 
     out = {
         "proxy_dataset": "C3PA official test (n=456)",
+        "retrieval_config": {
+            "lambda": ev.lam,
+            "top_M": ev.TOP_M,
+            "document_scoped": True,
+            "bm25_k1": 1.5,
+            "bm25_b": 0.75,
+            "self_rag_reflection_threshold": ev.REFLECTION_THRESHOLD,
+            "react_max_steps": ev.MAX_REACT_STEPS,
+        },
         "proxy": {
             k: {
                 "accuracy_pct": pct_rate(v["accuracy"]),
@@ -118,25 +119,12 @@ def main() -> None:
             }
             for k, v in proxy.items()
         },
-        "deployment_calibrated": calibrated,
-        "note": "Tier-2 rows combine C3PA proxy deltas with LLM uplift (+3.2pp Self-RAG reflection bonus).",
+        "self_rag_diagnostics": self_rag_diag,
+        "note": "C3PA Tier-1 proxy measurements; excluded from CNAS Table 5.",
     }
     OUT.write_text(json.dumps(out, indent=2), encoding="utf-8")
-
-    rows = [
-        ("Rule-Only", deploy["Rule-Only"]),
-        ("RAG-Only", deploy["RAG-Only"]),
-        ("Ensemble", deploy["Ensemble"]),
-        ("Self-RAG", calibrated["Self-RAG"]),
-        ("ReAct", calibrated["ReAct"]),
-        ("HRAG", deploy["HRAG"]),
-    ]
-    lines = ["method,accuracy,hallucination,hitl,latency_min"]
-    for name, m in rows:
-        lines.append(f"{name},{m['accuracy']},{m['hallucination']},{m['hitl']},{m['latency_min']}")
-    FIG_CSV.write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(json.dumps(out, indent=2))
-    print(f"Updated {FIG_CSV}")
+    print(f"Wrote {OUT}")
 
 
 if __name__ == "__main__":

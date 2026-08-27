@@ -1,0 +1,86 @@
+\section{Supplementary Tier-1 tables}
+\label{app:supp_tables}
+
+\begin{table}[t]
+\centering
+\caption{CNAS rule-trigger patterns and tolerance checks (Supplementary Table~S1)}
+\label{tab:cnas_rules_s1}
+\footnotesize
+\begin{tabular}{@{}clp{5.8cm}@{}}
+\toprule
+ID & Type & Pattern / check \\
+\midrule
+R01 & Regex & \texttt{r'有效期[为|至]\textbackslash d\{1,2\}年'} \\
+R02 & Regex & \texttt{r'CNAS-CL01:\textbackslash d\{4\}'} \\
+R03 & Regex & \texttt{r'报告编号[:：]\textbackslash s*[A-Z]\{2,4\}\textbackslash d\{6,10\}'} \\
+R04 & Regex & \texttt{r'样品名称[:：].\{2,80\}'} \\
+R05 & Regex & \texttt{r'检测日期[:：]\textbackslash d\{4\}[-/.]\textbackslash d\{1,2\}'} \\
+R06 & Regex & \texttt{r'签发日期[:：]\textbackslash d\{4\}[-/.]\textbackslash d\{1,2\}'} \\
+R07 & Regex & \texttt{r'检验依据[:：].*GB/T?\textbackslash d\{4,5\}(-\textbackslash d\{4\})?'} \\
+R08 & Regex & \texttt{r'CMA标志|资质认定标志'} \\
+R09 & Regex & \texttt{r'判定依据[:：].\{5,120\}'} \\
+R10 & Regex & \texttt{r'数字报告附件|电子附录'} \\
+R11 & Regex & \texttt{r'环境温度[:：]\textbackslash s*-?\textbackslash d+\textbackslash.\textbackslash d+℃'} \\
+R12 & Regex & \texttt{r'相对湿度[:：]\textbackslash s*\textbackslash d+\textbackslash.\textbackslash d+\%'} \\
+\midrule
+T01 & Tolerance & $|V_{\mathrm{reported}} - V_{\mathrm{standard}}| > 0.05 \times V_{\mathrm{standard}}$ \\
+T02 & Tolerance & Relative humidity deviation $> 5\%$ \\
+T03 & Tolerance & Test-date vs.\ issue-date gap $> 90$ days \\
+T04 & Tolerance & Sample mass deviation $> 2\%$ \\
+T05 & Tolerance & Measurement uncertainty ratio $> 1.5 \times$ limit \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Rule-amenable subset results (lenient hallucination, \%)}
+\label{tab:strata}
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Dataset & $n$ & Method & Acc.\ (\%) & Halluc.\ (\%) \\
+\midrule
+C3PA          & 427 & RAG-Only & 50.6 & 5.6 \\
+C3PA          & 427 & \HRAG{}  & 92.5 & 0.0 \\
+ContractNLI   & 410 & RAG-Only & 67.1 & 6.3 \\
+ContractNLI   & 410 & \HRAG{}  & 87.8 & 0.0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Rule-routed cascade analysis (Tier-1 replication)}
+\label{tab:cascade}
+\small
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Dataset & $n_{\mathrm{routed}}$ & Method & Halluc.\ (\%) & Conflict (\%) \\
+\midrule
+C3PA        & 424 & OR-Ensemble & 1.9 & 46.0 \\
+C3PA        & 424 & \HRAG{}     & 0.0 & 46.0 \\
+ContractNLI & 406 & OR-Ensemble & 1.5 & 32.3 \\
+ContractNLI & 406 & \HRAG{}     & 0.0 & 32.3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Hybrid retrieval ablation (validation NDCG@10 and RAG accuracy)}
+\label{tab:lambda}
+\small
+\begin{tabular}{@{}llccccc@{}}
+\toprule
+Dataset & Metric & $\lambda{=}0$ & 0.3 & 0.6 & 0.9 & 1.0 \\
+\midrule
+C3PA        & NDCG@10 & 0.403 & 0.413 & 0.430 & \textbf{0.459} & 0.454 \\
+            & RAG acc.\ (\%) & 42.5 & 43.9 & 43.3 & 45.3 & 46.1 \\
+ContractNLI & NDCG@10 & 0.748 & 0.768 & 0.807 & \textbf{0.826} & 0.796 \\
+            & RAG acc.\ (\%) & 55.7 & 56.3 & 55.9 & 55.9 & 56.1 \\
+\bottomrule
+\end{tabular}
+\par\vspace{0.3em}
+{\footnotesize ContractNLI $n{=}1037$: RAG accuracy is identical at $\lambda{=}0.6$ and $0.9$ (55.93\%). Default $\lambda{=}0.6$ is retained as the protocol value; a CNAS $\lambda$ grid was not run.}
+\end{table}

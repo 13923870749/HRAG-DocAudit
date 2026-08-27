@@ -1,0 +1,44 @@
+\section{Lenient vs.\ strict hallucination rates}
+\label{app:hallucination}
+
+Lenient hallucination counts an unsupported positive (\texttt{pred=1}, \texttt{label=0}) only when the method lacks valid retrieval evidence; rule-routed cascade decisions are treated as auditable rule outputs. Strict hallucination counts every false positive regardless of routing path.
+
+\begin{table}[t]
+\centering
+\caption{Hallucination metric sensitivity (Tier-1 replication, \%)}
+\label{tab:hallucination_sensitivity}
+\small
+\adjustbox{max width=\linewidth}{%
+\begin{tabular}{@{}llrlcc@{}}
+\toprule
+Dataset & Scope & $n$ & Method & Lenient & Strict \\
+\midrule
+C3PA & All items & 456 & RAG-Only & 5.3 & 5.3 \\
+ &  &  & OR-Ensemble & 1.8 & 7.0 \\
+ &  &  & \HRAG{} & 0.0 & 7.0 \\
+\midrule
+ & Rule-amenable & 427 & RAG-Only & 5.6 & 5.6 \\
+ &  &  & OR-Ensemble & 1.9 & 7.5 \\
+ &  &  & \HRAG{} & 0.0 & 7.5 \\
+\midrule
+ & Rule-routed & 424 & RAG-Only & 5.7 & 5.7 \\
+ &  &  & OR-Ensemble & 1.9 & 7.5 \\
+ &  &  & \HRAG{} & 0.0 & 7.5 \\
+\midrule
+ContractNLI & All items & 2091 & RAG-Only & 29.1 & 29.1 \\
+ &  &  & OR-Ensemble & 0.3 & 30.2 \\
+ &  &  & \HRAG{} & 27.8 & 30.2 \\
+\midrule
+ & Rule-amenable & 410 & RAG-Only & 6.3 & 6.3 \\
+ &  &  & OR-Ensemble & 1.5 & 12.0 \\
+ &  &  & \HRAG{} & 0.0 & 12.0 \\
+\midrule
+ & Rule-routed & 406 & RAG-Only & 6.4 & 6.4 \\
+ &  &  & OR-Ensemble & 1.5 & 12.1 \\
+ &  &  & \HRAG{} & 0.0 & 12.1 \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+Strict counting exposes rule-engine false positives that lenient counting excludes (e.g., 7.5\% on C3PA rule-amenable items for \HRAG{} and OR-ensemble). Both metrics are therefore reported together when comparing safety claims. In particular, \HRAG{} and OR-ensemble are identical under the strict metric on every reported stratum; any claim of reduced hallucination is restricted to RAG-origin (lenient) unsupported positives on rule-routed items.

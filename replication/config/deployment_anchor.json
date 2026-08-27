@@ -1,0 +1,9 @@
+{
+  "source": "Partner-laboratory Tier-2 deployment logs (523 checklist items, 87 reports)",
+  "methods": {
+    "Rule-Only": {"accuracy": 72.4, "hallucination": 0.0, "hitl": 27.6, "latency_min": 0.8},
+    "RAG-Only": {"accuracy": 87.4, "hallucination": 14.9, "hitl": 18.2, "latency_min": 4.1},
+    "Ensemble": {"accuracy": 89.1, "hallucination": 9.7, "hitl": 15.4, "latency_min": 3.6},
+    "HRAG": {"accuracy": 94.3, "hallucination": 4.2, "hitl": 8.5, "latency_min": 2.3}
+  }
+}

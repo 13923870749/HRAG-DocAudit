@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "description": "HRAG-DocAudit rule definitions for CNAS-style audit items",
+  "rules": [
+    {"id": "R01", "type": "format", "pattern": "report_no", "keywords": ["report_no", "编号"]},
+    {"id": "R02", "type": "format", "pattern": "test_date", "keywords": ["date", "日期"]},
+    {"id": "R03", "type": "format", "pattern": "signature", "keywords": ["signature", "签字", "盖章"]},
+    {"id": "R04", "type": "consistency", "pattern": "numeric_limit", "keywords": ["value", "limit", "限值"]},
+    {"id": "R05", "type": "consistency", "pattern": "unit", "keywords": ["unit", "单位"]},
+    {"id": "R06", "type": "conclusion", "pattern": "pass_fail", "keywords": ["qualified", "pass", "fail", "合格"]},
+    {"id": "R07", "type": "standard", "pattern": "std_ref", "keywords": ["GB/T", "clause", "标准"]}
+  ],
+  "c3pa_mandates": 12,
+  "priority": "rule_first"
+}

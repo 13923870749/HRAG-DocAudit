@@ -1,0 +1,9 @@
+dataset,method,accuracy,hallucination
+C3PA,Rule-Only,89.3,0.0
+C3PA,RAG-Only,52.4,5.3
+C3PA,Ensemble,91.7,1.8
+C3PA,HRAG,91.7,0.0
+ContractNLI,Rule-Only,68.4,0.0
+ContractNLI,RAG-Only,56.8,29.1
+ContractNLI,Ensemble,60.9,0.3
+ContractNLI,HRAG,60.9,27.8

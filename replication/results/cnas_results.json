@@ -1,0 +1,596 @@
+{
+  "holdout": {
+    "train_n": 324,
+    "test_n": 144,
+    "split_rule": "period<=2023-06 train, else test",
+    "note": "De-identified replication proxy; deployment metrics in manuscript are from partner-lab LLM pipeline."
+  },
+  "holdout_test": {
+    "n": 144,
+    "methods": {
+      "rule": {
+        "accuracy": 0.6527777777777778,
+        "macro_f1": 0.5281782437745741,
+        "n": 144,
+        "hallucination_rate": 0.0,
+        "hallucination_rate_lenient": 0.0,
+        "hallucination_rate_strict": 0.0,
+        "evidence_hit_rate": 0.5833333333333334,
+        "covariance": 0.0,
+        "conflict_rate": 0.5833333333333334,
+        "output_covariance_rule_method": 0.24475524475524496,
+        "rule_subspace": {
+          "n_rule_routed": 84,
+          "rule_alignment": 1.0,
+          "output_covariance_rule_method": 0.0,
+          "conflict_rate_rule_rag": 1.0,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0
+        },
+        "accuracy_ci": [
+          0.6530138888888888,
+          0.5763888888888888,
+          0.7361111111111112
+        ],
+        "hallucination_ci": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "hallucination_strict_ci": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "rag": {
+        "accuracy": 0.06944444444444445,
+        "macro_f1": 0.06493506493506493,
+        "n": 144,
+        "hallucination_rate": 0.0,
+        "hallucination_rate_lenient": 0.0,
+        "hallucination_rate_strict": 0.0,
+        "evidence_hit_rate": 0.0,
+        "covariance": 0.0,
+        "conflict_rate": 0.5833333333333334,
+        "output_covariance_rule_method": 0.0,
+        "rule_subspace": {
+          "n_rule_routed": 0
+        },
+        "ndcg_at_10": 1.0,
+        "accuracy_ci": [
+          0.06890277777777777,
+          0.034722222222222224,
+          0.1111111111111111
+        ],
+        "hallucination_ci": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "hallucination_strict_ci": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "ensemble": {
+        "accuracy": 0.6527777777777778,
+        "macro_f1": 0.5281782437745741,
+        "n": 144,
+        "hallucination_rate": 0.0,
+        "hallucination_rate_lenient": 0.0,
+        "hallucination_rate_strict": 0.0,
+        "evidence_hit_rate": 0.5833333333333334,
+        "covariance": 0.0,
+        "conflict_rate": 0.5833333333333334,
+        "output_covariance_rule_method": 0.24475524475524496,
+        "rule_subspace": {
+          "n_rule_routed": 84,
+          "rule_alignment": 1.0,
+          "output_covariance_rule_method": 0.0,
+          "conflict_rate_rule_rag": 1.0,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0
+        },
+        "accuracy_ci": [
+          0.6530138888888888,
+          0.5763888888888888,
+          0.7361111111111112
+        ],
+        "hallucination_ci": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "hallucination_strict_ci": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "hrag": {
+        "accuracy": 0.6527777777777778,
+        "macro_f1": 0.5281782437745741,
+        "n": 144,
+        "hallucination_rate": 0.0,
+        "hallucination_rate_lenient": 0.0,
+        "hallucination_rate_strict": 0.0,
+        "evidence_hit_rate": 0.5833333333333334,
+        "covariance": 0.0,
+        "conflict_rate": 0.5833333333333334,
+        "output_covariance_rule_method": 0.24475524475524496,
+        "rule_subspace": {
+          "n_rule_routed": 84,
+          "rule_alignment": 1.0,
+          "output_covariance_rule_method": 0.0,
+          "conflict_rate_rule_rag": 1.0,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0
+        },
+        "accuracy_ci": [
+          0.6530138888888888,
+          0.5763888888888888,
+          0.7361111111111112
+        ],
+        "hallucination_ci": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "hallucination_strict_ci": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "strata": {
+      "rule_amenable": {
+        "n": 89,
+        "hrag": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "n": 89,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0,
+          "evidence_hit_rate": 0.9438202247191011,
+          "covariance": 0.0,
+          "rule_subspace": {
+            "n_rule_routed": 84,
+            "rule_alignment": 1.0,
+            "output_covariance_rule_method": 0.0,
+            "conflict_rate_rule_rag": 1.0,
+            "hallucination_rate": 0.0,
+            "hallucination_rate_lenient": 0.0,
+            "hallucination_rate_strict": 0.0
+          }
+        },
+        "rag": {
+          "accuracy": 0.056179775280898875,
+          "macro_f1": 0.05319148936170213,
+          "n": 89,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0,
+          "evidence_hit_rate": 0.0,
+          "covariance": 0.0,
+          "rule_subspace": {
+            "n_rule_routed": 0
+          }
+        },
+        "ensemble": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "n": 89,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0,
+          "evidence_hit_rate": 0.9438202247191011,
+          "covariance": 0.0,
+          "rule_subspace": {
+            "n_rule_routed": 84,
+            "rule_alignment": 1.0,
+            "output_covariance_rule_method": 0.0,
+            "conflict_rate_rule_rag": 1.0,
+            "hallucination_rate": 0.0,
+            "hallucination_rate_lenient": 0.0,
+            "hallucination_rate_strict": 0.0
+          }
+        }
+      },
+      "semantic_only": {
+        "n": 55,
+        "hrag": {
+          "accuracy": 0.09090909090909091,
+          "macro_f1": 0.08333333333333333,
+          "n": 55,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0,
+          "evidence_hit_rate": 0.0,
+          "covariance": 0.0,
+          "rule_subspace": {
+            "n_rule_routed": 0
+          }
+        },
+        "rag": {
+          "accuracy": 0.09090909090909091,
+          "macro_f1": 0.08333333333333333,
+          "n": 55,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0,
+          "evidence_hit_rate": 0.0,
+          "covariance": 0.0,
+          "rule_subspace": {
+            "n_rule_routed": 0
+          }
+        },
+        "ensemble": {
+          "accuracy": 0.09090909090909091,
+          "macro_f1": 0.08333333333333333,
+          "n": 55,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0,
+          "evidence_hit_rate": 0.0,
+          "covariance": 0.0,
+          "rule_subspace": {
+            "n_rule_routed": 0
+          }
+        }
+      }
+    },
+    "cascade_analysis": {
+      "ensemble": {
+        "n_rule_routed": 84,
+        "rule_alignment": 1.0,
+        "output_covariance_rule_method": 0.0,
+        "conflict_rate_rule_rag": 1.0,
+        "hallucination_rate": 0.0,
+        "hallucination_rate_lenient": 0.0,
+        "hallucination_rate_strict": 0.0
+      },
+      "hrag": {
+        "n_rule_routed": 84,
+        "rule_alignment": 1.0,
+        "output_covariance_rule_method": 0.0,
+        "conflict_rate_rule_rag": 1.0,
+        "hallucination_rate": 0.0,
+        "hallucination_rate_lenient": 0.0,
+        "hallucination_rate_strict": 0.0
+      }
+    },
+    "coverage": {
+      "rule_amenable_rate": 0.6180555555555556,
+      "n_rule_amenable": 89
+    },
+    "mcnemar_hrag_vs_rag": {
+      "b": 84,
+      "c": 0,
+      "stat": 82.01190476190476,
+      "p_value": 1.3526945495274322e-19
+    },
+    "mcnemar_hrag_vs_ensemble": {
+      "b": 0,
+      "c": 0,
+      "stat": 0.0,
+      "p_value": 1.0
+    }
+  },
+  "full_deidentified": {
+    "n": 468,
+    "methods": {
+      "rule": {
+        "accuracy": 0.6410256410256411,
+        "macro_f1": 0.5039745627980922,
+        "n": 468,
+        "hallucination_rate": 0.0,
+        "hallucination_rate_lenient": 0.0,
+        "hallucination_rate_strict": 0.0,
+        "evidence_hit_rate": 0.5833333333333334,
+        "covariance": 0.0,
+        "conflict_rate": 0.5833333333333334,
+        "output_covariance_rule_method": 0.24357601713062196,
+        "rule_subspace": {
+          "n_rule_routed": 273,
+          "rule_alignment": 1.0,
+          "output_covariance_rule_method": 0.0,
+          "conflict_rate_rule_rag": 1.0,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0
+        },
+        "accuracy_ci": [
+          0.6413290598290599,
+          0.5982905982905983,
+          0.6858974358974359
+        ],
+        "hallucination_ci": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "hallucination_strict_ci": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "rag": {
+        "accuracy": 0.057692307692307696,
+        "macro_f1": 0.05454545454545454,
+        "n": 468,
+        "hallucination_rate": 0.0,
+        "hallucination_rate_lenient": 0.0,
+        "hallucination_rate_strict": 0.0,
+        "evidence_hit_rate": 0.0,
+        "covariance": 0.0,
+        "conflict_rate": 0.5833333333333334,
+        "output_covariance_rule_method": 0.0,
+        "rule_subspace": {
+          "n_rule_routed": 0
+        },
+        "ndcg_at_10": 1.0,
+        "accuracy_ci": [
+          0.05738675213675214,
+          0.03632478632478633,
+          0.07905982905982906
+        ],
+        "hallucination_ci": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "hallucination_strict_ci": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "ensemble": {
+        "accuracy": 0.6410256410256411,
+        "macro_f1": 0.5039745627980922,
+        "n": 468,
+        "hallucination_rate": 0.0,
+        "hallucination_rate_lenient": 0.0,
+        "hallucination_rate_strict": 0.0,
+        "evidence_hit_rate": 0.5833333333333334,
+        "covariance": 0.0,
+        "conflict_rate": 0.5833333333333334,
+        "output_covariance_rule_method": 0.24357601713062196,
+        "rule_subspace": {
+          "n_rule_routed": 273,
+          "rule_alignment": 1.0,
+          "output_covariance_rule_method": 0.0,
+          "conflict_rate_rule_rag": 1.0,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0
+        },
+        "accuracy_ci": [
+          0.6413290598290599,
+          0.5982905982905983,
+          0.6858974358974359
+        ],
+        "hallucination_ci": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "hallucination_strict_ci": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "hrag": {
+        "accuracy": 0.6410256410256411,
+        "macro_f1": 0.5039745627980922,
+        "n": 468,
+        "hallucination_rate": 0.0,
+        "hallucination_rate_lenient": 0.0,
+        "hallucination_rate_strict": 0.0,
+        "evidence_hit_rate": 0.5833333333333334,
+        "covariance": 0.0,
+        "conflict_rate": 0.5833333333333334,
+        "output_covariance_rule_method": 0.24357601713062196,
+        "rule_subspace": {
+          "n_rule_routed": 273,
+          "rule_alignment": 1.0,
+          "output_covariance_rule_method": 0.0,
+          "conflict_rate_rule_rag": 1.0,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0
+        },
+        "accuracy_ci": [
+          0.6413290598290599,
+          0.5982905982905983,
+          0.6858974358974359
+        ],
+        "hallucination_ci": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "hallucination_strict_ci": [
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "strata": {
+      "rule_amenable": {
+        "n": 290,
+        "hrag": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "n": 290,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0,
+          "evidence_hit_rate": 0.9413793103448276,
+          "covariance": 0.0,
+          "rule_subspace": {
+            "n_rule_routed": 273,
+            "rule_alignment": 1.0,
+            "output_covariance_rule_method": 0.0,
+            "conflict_rate_rule_rag": 1.0,
+            "hallucination_rate": 0.0,
+            "hallucination_rate_lenient": 0.0,
+            "hallucination_rate_strict": 0.0
+          }
+        },
+        "rag": {
+          "accuracy": 0.05862068965517241,
+          "macro_f1": 0.05537459283387622,
+          "n": 290,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0,
+          "evidence_hit_rate": 0.0,
+          "covariance": 0.0,
+          "rule_subspace": {
+            "n_rule_routed": 0
+          }
+        },
+        "ensemble": {
+          "accuracy": 1.0,
+          "macro_f1": 1.0,
+          "n": 290,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0,
+          "evidence_hit_rate": 0.9413793103448276,
+          "covariance": 0.0,
+          "rule_subspace": {
+            "n_rule_routed": 273,
+            "rule_alignment": 1.0,
+            "output_covariance_rule_method": 0.0,
+            "conflict_rate_rule_rag": 1.0,
+            "hallucination_rate": 0.0,
+            "hallucination_rate_lenient": 0.0,
+            "hallucination_rate_strict": 0.0
+          }
+        }
+      },
+      "semantic_only": {
+        "n": 178,
+        "hrag": {
+          "accuracy": 0.056179775280898875,
+          "macro_f1": 0.05319148936170213,
+          "n": 178,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0,
+          "evidence_hit_rate": 0.0,
+          "covariance": 0.0,
+          "rule_subspace": {
+            "n_rule_routed": 0
+          }
+        },
+        "rag": {
+          "accuracy": 0.056179775280898875,
+          "macro_f1": 0.05319148936170213,
+          "n": 178,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0,
+          "evidence_hit_rate": 0.0,
+          "covariance": 0.0,
+          "rule_subspace": {
+            "n_rule_routed": 0
+          }
+        },
+        "ensemble": {
+          "accuracy": 0.056179775280898875,
+          "macro_f1": 0.05319148936170213,
+          "n": 178,
+          "hallucination_rate": 0.0,
+          "hallucination_rate_lenient": 0.0,
+          "hallucination_rate_strict": 0.0,
+          "evidence_hit_rate": 0.0,
+          "covariance": 0.0,
+          "rule_subspace": {
+            "n_rule_routed": 0
+          }
+        }
+      }
+    },
+    "cascade_analysis": {
+      "ensemble": {
+        "n_rule_routed": 273,
+        "rule_alignment": 1.0,
+        "output_covariance_rule_method": 0.0,
+        "conflict_rate_rule_rag": 1.0,
+        "hallucination_rate": 0.0,
+        "hallucination_rate_lenient": 0.0,
+        "hallucination_rate_strict": 0.0
+      },
+      "hrag": {
+        "n_rule_routed": 273,
+        "rule_alignment": 1.0,
+        "output_covariance_rule_method": 0.0,
+        "conflict_rate_rule_rag": 1.0,
+        "hallucination_rate": 0.0,
+        "hallucination_rate_lenient": 0.0,
+        "hallucination_rate_strict": 0.0
+      }
+    },
+    "coverage": {
+      "rule_amenable_rate": 0.6196581196581197,
+      "n_rule_amenable": 290
+    },
+    "mcnemar_hrag_vs_rag": {
+      "b": 273,
+      "c": 0,
+      "stat": 271.003663003663,
+      "p_value": 6.857514776396073e-61
+    },
+    "mcnemar_hrag_vs_ensemble": {
+      "b": 0,
+      "c": 0,
+      "stat": 0.0,
+      "p_value": 1.0
+    }
+  },
+  "ablation": {
+    "full_hrag": {
+      "accuracy": 0.6410256410256411,
+      "macro_f1": 0.5039745627980922,
+      "n": 468,
+      "hallucination_rate": 0.0,
+      "hallucination_rate_lenient": 0.0,
+      "hallucination_rate_strict": 0.0,
+      "evidence_hit_rate": 0.5833333333333334,
+      "covariance": 0.0
+    },
+    "w/o_priority": {
+      "accuracy": 0.6410256410256411,
+      "macro_f1": 0.5039745627980922,
+      "n": 468,
+      "hallucination_rate": 0.0,
+      "hallucination_rate_lenient": 0.0,
+      "hallucination_rate_strict": 0.0,
+      "evidence_hit_rate": 0.5833333333333334,
+      "covariance": 0.0
+    },
+    "w/o_rules": {
+      "accuracy": 0.057692307692307696,
+      "macro_f1": 0.05454545454545454,
+      "n": 468,
+      "hallucination_rate": 0.0,
+      "hallucination_rate_lenient": 0.0,
+      "hallucination_rate_strict": 0.0,
+      "evidence_hit_rate": 0.0,
+      "covariance": 0.0
+    }
+  }
+}

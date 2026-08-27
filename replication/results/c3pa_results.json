@@ -1,0 +1,171 @@
+{
+  "rule": {
+    "accuracy": 0.8925438596491229,
+    "macro_f1": 0.6604616530156366,
+    "n": 456,
+    "hallucination_rate": 0.0,
+    "hallucination_rate_lenient": 0.0,
+    "hallucination_rate_strict": 0.07017543859649122,
+    "evidence_hit_rate": 0.6754385964912281,
+    "covariance": 0.012839791787160191,
+    "conflict_rate": 0.4517543859649123,
+    "output_covariance_rule_method": 0.06539425486793903,
+    "rule_subspace": {
+      "n_rule_routed": 424,
+      "rule_alignment": 1.0,
+      "output_covariance_rule_method": 0.0,
+      "conflict_rate_rule_rag": 0.45990566037735847,
+      "hallucination_rate": 0.0,
+      "hallucination_rate_lenient": 0.0,
+      "hallucination_rate_strict": 0.07547169811320754
+    },
+    "accuracy_ci": [
+      0.8927631578947369,
+      0.8661732456140351,
+      0.9210526315789473
+    ],
+    "hallucination_ci": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "hallucination_strict_ci": [
+      0.06994736842105263,
+      0.04824561403508772,
+      0.09210526315789473
+    ]
+  },
+  "rag": {
+    "accuracy": 0.5241228070175439,
+    "macro_f1": 0.4202721941331209,
+    "n": 456,
+    "hallucination_rate": 0.05263157894736842,
+    "hallucination_rate_lenient": 0.05263157894736842,
+    "hallucination_rate_strict": 0.05263157894736842,
+    "evidence_hit_rate": 0.47368421052631576,
+    "covariance": 0.012839791787160191,
+    "conflict_rate": 0.4517543859649123,
+    "output_covariance_rule_method": 0.012839791787160191,
+    "rule_subspace": {
+      "n_rule_routed": 0
+    },
+    "ndcg_at_10": 0.5507110898141471,
+    "accuracy_ci": [
+      0.523594298245614,
+      0.4780701754385965,
+      0.5679824561403509
+    ],
+    "hallucination_ci": [
+      0.052747807017543856,
+      0.03508771929824561,
+      0.07236842105263158
+    ],
+    "hallucination_strict_ci": [
+      0.052747807017543856,
+      0.03508771929824561,
+      0.07236842105263158
+    ]
+  },
+  "rag_rerank": {
+    "accuracy": 0.5241228070175439,
+    "macro_f1": 0.4202721941331209,
+    "n": 456,
+    "hallucination_rate": 0.05263157894736842,
+    "hallucination_rate_lenient": 0.05263157894736842,
+    "hallucination_rate_strict": 0.05263157894736842,
+    "evidence_hit_rate": 0.47368421052631576,
+    "covariance": 0.012839791787160191,
+    "conflict_rate": 0.4517543859649123,
+    "output_covariance_rule_method": 0.012839791787160191,
+    "rule_subspace": {
+      "n_rule_routed": 0
+    },
+    "accuracy_ci": [
+      0.523594298245614,
+      0.4780701754385965,
+      0.5679824561403509
+    ],
+    "hallucination_ci": [
+      0.052747807017543856,
+      0.03508771929824561,
+      0.07236842105263158
+    ],
+    "hallucination_strict_ci": [
+      0.052747807017543856,
+      0.03508771929824561,
+      0.07236842105263158
+    ]
+  },
+  "ensemble": {
+    "accuracy": 0.9166666666666666,
+    "macro_f1": 0.6980763869528854,
+    "n": 456,
+    "hallucination_rate": 0.017543859649122806,
+    "hallucination_rate_lenient": 0.017543859649122806,
+    "hallucination_rate_strict": 0.07017543859649122,
+    "evidence_hit_rate": 0.8837719298245614,
+    "covariance": 0.012839791787160191,
+    "conflict_rate": 0.4517543859649123,
+    "output_covariance_rule_method": 0.04291497975708508,
+    "rule_subspace": {
+      "n_rule_routed": 424,
+      "rule_alignment": 1.0,
+      "output_covariance_rule_method": 0.0,
+      "conflict_rate_rule_rag": 0.45990566037735847,
+      "hallucination_rate": 0.018867924528301886,
+      "hallucination_rate_lenient": 0.018867924528301886,
+      "hallucination_rate_strict": 0.07547169811320754
+    },
+    "accuracy_ci": [
+      0.9166842105263158,
+      0.8903508771929824,
+      0.9429824561403509
+    ],
+    "hallucination_ci": [
+      0.01719956140350877,
+      0.006578947368421052,
+      0.03070175438596491
+    ],
+    "hallucination_strict_ci": [
+      0.06994736842105263,
+      0.04824561403508772,
+      0.09210526315789473
+    ]
+  },
+  "hrag": {
+    "accuracy": 0.9166666666666666,
+    "macro_f1": 0.6980763869528854,
+    "n": 456,
+    "hallucination_rate": 0.0,
+    "hallucination_rate_lenient": 0.0,
+    "hallucination_rate_strict": 0.07017543859649122,
+    "evidence_hit_rate": 0.6995614035087719,
+    "covariance": 0.012839791787160191,
+    "conflict_rate": 0.4517543859649123,
+    "output_covariance_rule_method": 0.04291497975708508,
+    "rule_subspace": {
+      "n_rule_routed": 424,
+      "rule_alignment": 1.0,
+      "output_covariance_rule_method": 0.0,
+      "conflict_rate_rule_rag": 0.45990566037735847,
+      "hallucination_rate": 0.0,
+      "hallucination_rate_lenient": 0.0,
+      "hallucination_rate_strict": 0.07547169811320754
+    },
+    "accuracy_ci": [
+      0.9166842105263158,
+      0.8903508771929824,
+      0.9429824561403509
+    ],
+    "hallucination_ci": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "hallucination_strict_ci": [
+      0.06994736842105263,
+      0.04824561403508772,
+      0.09210526315789473
+    ]
+  }
+}

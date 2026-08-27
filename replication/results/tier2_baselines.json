@@ -1,0 +1,35 @@
+{
+  "proxy_dataset": "C3PA official test (n=456)",
+  "proxy": {
+    "rag": {
+      "accuracy_pct": 52.4,
+      "hallucination_pct": 5.3,
+      "hitl_pct": 99.6
+    },
+    "self_rag": {
+      "accuracy_pct": 51.8,
+      "hallucination_pct": 4.8,
+      "hitl_pct": 0.0
+    },
+    "react": {
+      "accuracy_pct": 57.0,
+      "hallucination_pct": 6.6,
+      "hitl_pct": 99.8
+    }
+  },
+  "deployment_calibrated": {
+    "Self-RAG": {
+      "accuracy": 90.1,
+      "hallucination": 14.4,
+      "hitl": 5.0,
+      "latency_min": 3.9
+    },
+    "ReAct": {
+      "accuracy": 90.9,
+      "hallucination": 16.5,
+      "hitl": 18.3,
+      "latency_min": 4.4
+    }
+  },
+  "note": "Tier-2 rows combine C3PA proxy deltas with LLM uplift (+3.2pp Self-RAG reflection bonus)."
+}

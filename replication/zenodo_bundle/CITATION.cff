@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+title: "HRAG-DocAudit Replication Bundle"
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Liu
+    given-names: Hui
+  - family-names: Lei
+    given-names: Qiongyu
+  - family-names: Feng
+    given-names: Rui
+version: 0.1.0
+date-released: 2026-08-26
+license: MIT
+repository-code: "https://github.com/placeholder/hrag-docaudit-replication"
+keywords:
+  - retrieval-augmented generation
+  - compliance auditing
+  - document intelligence

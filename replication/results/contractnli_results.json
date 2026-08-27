@@ -1,0 +1,141 @@
+{
+  "rule": {
+    "accuracy": 0.6843615494978479,
+    "macro_f1": 0.6423039599895495,
+    "n": 2091,
+    "hallucination_rate": 0.0,
+    "hallucination_rate_lenient": 0.0,
+    "hallucination_rate_strict": 0.0234337637494022,
+    "evidence_hit_rate": 0.1597321855571497,
+    "covariance": 0.01257130696834696,
+    "conflict_rate": 0.5437589670014347,
+    "output_covariance_rule_method": 0.15654010466364104,
+    "rule_subspace": {
+      "n_rule_routed": 406,
+      "rule_alignment": 1.0,
+      "output_covariance_rule_method": 0.0,
+      "conflict_rate_rule_rag": 0.3226600985221675,
+      "hallucination_rate": 0.0,
+      "hallucination_rate_lenient": 0.0,
+      "hallucination_rate_strict": 0.1206896551724138
+    },
+    "accuracy_ci": [
+      0.6847556193208991,
+      0.664753706360593,
+      0.7049258727881397
+    ],
+    "hallucination_ci": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "hallucination_strict_ci": [
+      0.023344811095169775,
+      0.01721664275466284,
+      0.03012912482065997
+    ]
+  },
+  "rag": {
+    "accuracy": 0.5681492109038737,
+    "macro_f1": 0.5656693542246862,
+    "n": 2091,
+    "hallucination_rate": 0.29076996652319465,
+    "hallucination_rate_lenient": 0.29076996652319465,
+    "hallucination_rate_strict": 0.29076996652319465,
+    "evidence_hit_rate": 0.4648493543758967,
+    "covariance": 0.01257130696834696,
+    "conflict_rate": 0.5437589670014347,
+    "output_covariance_rule_method": 0.01257130696834696,
+    "rule_subspace": {
+      "n_rule_routed": 0
+    },
+    "ndcg_at_10": 0.8685689267680642,
+    "accuracy_ci": [
+      0.5679607843137255,
+      0.5447034911525586,
+      0.5872788139646102
+    ],
+    "hallucination_ci": [
+      0.2905805834528934,
+      0.27259684361549497,
+      0.31037780966044953
+    ],
+    "hallucination_strict_ci": [
+      0.2905805834528934,
+      0.27259684361549497,
+      0.31037780966044953
+    ]
+  },
+  "ensemble": {
+    "accuracy": 0.6087996174079388,
+    "macro_f1": 0.6011812272078643,
+    "n": 2091,
+    "hallucination_rate": 0.0028694404591104736,
+    "hallucination_rate_lenient": 0.0028694404591104736,
+    "hallucination_rate_strict": 0.3017694882831181,
+    "evidence_hit_rate": 0.5083692013390723,
+    "covariance": 0.01257130696834696,
+    "conflict_rate": 0.5437589670014347,
+    "output_covariance_rule_method": 0.06308055256178813,
+    "rule_subspace": {
+      "n_rule_routed": 406,
+      "rule_alignment": 1.0,
+      "output_covariance_rule_method": 0.0,
+      "conflict_rate_rule_rag": 0.3226600985221675,
+      "hallucination_rate": 0.014778325123152709,
+      "hallucination_rate_lenient": 0.014778325123152709,
+      "hallucination_rate_strict": 0.1206896551724138
+    },
+    "accuracy_ci": [
+      0.6088436154949783,
+      0.5877570540411287,
+      0.6274509803921569
+    ],
+    "hallucination_ci": [
+      0.002908656145384983,
+      0.0009564801530368245,
+      0.005272596843615484
+    ],
+    "hallucination_strict_ci": [
+      0.3015255858440937,
+      0.28263988522238165,
+      0.3218675274988044
+    ]
+  },
+  "hrag": {
+    "accuracy": 0.6087996174079388,
+    "macro_f1": 0.6011812272078643,
+    "n": 2091,
+    "hallucination_rate": 0.2783357245337159,
+    "hallucination_rate_lenient": 0.2783357245337159,
+    "hallucination_rate_strict": 0.3017694882831181,
+    "evidence_hit_rate": 0.49736967957914874,
+    "covariance": 0.01257130696834696,
+    "conflict_rate": 0.5437589670014347,
+    "output_covariance_rule_method": 0.06308055256178813,
+    "rule_subspace": {
+      "n_rule_routed": 406,
+      "rule_alignment": 1.0,
+      "output_covariance_rule_method": 0.0,
+      "conflict_rate_rule_rag": 0.3226600985221675,
+      "hallucination_rate": 0.0,
+      "hallucination_rate_lenient": 0.0,
+      "hallucination_rate_strict": 0.1206896551724138
+    },
+    "accuracy_ci": [
+      0.6088436154949783,
+      0.5877570540411287,
+      0.6274509803921569
+    ],
+    "hallucination_ci": [
+      0.27818077474892394,
+      0.26015064562410334,
+      0.29794356767097085
+    ],
+    "hallucination_strict_ci": [
+      0.3015255858440937,
+      0.28263988522238165,
+      0.3218675274988044
+    ]
+  }
+}

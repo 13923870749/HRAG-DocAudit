@@ -1,0 +1,79 @@
+{
+  "lambdas": [
+    0.0,
+    0.3,
+    0.6,
+    0.9,
+    1.0
+  ],
+  "tracks": [
+    {
+      "dataset": "c3pa",
+      "split": "val.jsonl",
+      "n": 492,
+      "sweep": [
+        {
+          "lambda": 0.0,
+          "ndcg_at_10": 0.40343802226965325,
+          "rag_accuracy": 0.4247967479674797
+        },
+        {
+          "lambda": 0.3,
+          "ndcg_at_10": 0.41327639116741216,
+          "rag_accuracy": 0.43902439024390244
+        },
+        {
+          "lambda": 0.6,
+          "ndcg_at_10": 0.430276290677699,
+          "rag_accuracy": 0.4329268292682927
+        },
+        {
+          "lambda": 0.9,
+          "ndcg_at_10": 0.4593705217674003,
+          "rag_accuracy": 0.4532520325203252
+        },
+        {
+          "lambda": 1.0,
+          "ndcg_at_10": 0.4535849901615594,
+          "rag_accuracy": 0.4613821138211382
+        }
+      ],
+      "best_lambda_ndcg": 0.9,
+      "best_ndcg_at_10": 0.4593705217674003
+    },
+    {
+      "dataset": "contractnli",
+      "split": "validation.jsonl",
+      "n": 1037,
+      "sweep": [
+        {
+          "lambda": 0.0,
+          "ndcg_at_10": 0.7484668981483114,
+          "rag_accuracy": 0.5573770491803278
+        },
+        {
+          "lambda": 0.3,
+          "ndcg_at_10": 0.7681751029799171,
+          "rag_accuracy": 0.5631629701060752
+        },
+        {
+          "lambda": 0.6,
+          "ndcg_at_10": 0.8067526792896151,
+          "rag_accuracy": 0.5593056894889104
+        },
+        {
+          "lambda": 0.9,
+          "ndcg_at_10": 0.8264080137536065,
+          "rag_accuracy": 0.5593056894889104
+        },
+        {
+          "lambda": 1.0,
+          "ndcg_at_10": 0.7956577334476415,
+          "rag_accuracy": 0.5612343297974928
+        }
+      ],
+      "best_lambda_ndcg": 0.9,
+      "best_ndcg_at_10": 0.8264080137536065
+    }
+  ]
+}

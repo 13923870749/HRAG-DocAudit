@@ -1,6 +1,6 @@
 # 上传到 4open.science（Anonymous GitHub）
 
-论文引用 URL：**https://anonymous.4open.science/r/HRAG-DocAudit**
+论文引用 URL：**https://anonymous.4open.science/r/HRAG-DocAudit-D8AE**
 
 ## 当前进度
 
@@ -8,9 +8,9 @@
 |------|------|
 | 本地复现包 | ✅ `HRAG-DocAudit-export/`（5.7 MB） |
 | GitHub 源仓库（公开） | ✅ https://github.com/13923870749/HRAG-DocAudit |
-| 4open 匿名镜像 | ⚠️ **需您手动授权一次**（GitHub 2FA OAuth） |
+| 4open 匿名镜像 | ✅ **https://anonymous.4open.science/r/HRAG-DocAudit-D8AE**（Status: Ready） |
 
-4open **不是**直接 git push 的平台；它镜像 GitHub 仓库并脱敏。已创建占位 ID `HRAG-DocAudit`，但尚未成功拉取源码（需登录授权）。
+> 说明：首次尝试创建的 `HRAG-DocAudit` slug 因未授权而损坏；4open 自动分配后缀 `-D8AE`。论文链接已同步更新。
 
 ## 一键完成匿名镜像（约 1 分钟）
 
@@ -37,7 +37,7 @@
      scutliu37352366
      ```
 4. 点击 **Anonymize Repository**
-5. 验证：打开 https://anonymous.4open.science/r/HRAG-DocAudit 应能看到 `README.md` 和 `replication/`
+5. 验证：打开 https://anonymous.4open.science/r/HRAG-DocAudit-D8AE 应能看到 `README.md` 和 `replication/`
 
 ## 本地复现（无需 4open）
 

@@ -1,52 +1,65 @@
-# 上传到 4open.science 的步骤
+# 上传到 4open.science（Anonymous GitHub）
 
-论文中引用的匿名仓库 URL：
+论文引用 URL：**https://anonymous.4open.science/r/HRAG-DocAudit**
 
-**https://anonymous.4open.science/r/HRAG-DocAudit**
+## 当前进度
 
-## 当前状态
+| 步骤 | 状态 |
+|------|------|
+| 本地复现包 | ✅ `HRAG-DocAudit-export/`（5.7 MB） |
+| GitHub 源仓库（公开） | ✅ https://github.com/13923870749/HRAG-DocAudit |
+| 4open 匿名镜像 | ⚠️ **需您手动授权一次**（GitHub 2FA OAuth） |
 
-本地导出包已就绪（约 5.7 MB）：
+4open **不是**直接 git push 的平台；它镜像 GitHub 仓库并脱敏。已创建占位 ID `HRAG-DocAudit`，但尚未成功拉取源码（需登录授权）。
 
-```
-submission/eaai/HRAG-DocAudit-export/
-```
+## 一键完成匿名镜像（约 1 分钟）
 
-已执行 `git init` 并完成本地 commit；远程仓库 **尚未在 4open.science 上创建**，因此自动 `git push` 失败（404）。
+1. 打开 **[anonymous.4open.science/anonymize](https://anonymous.4open.science/anonymize)**
+2. 点击 **Sign in with GitHub** → 在 GitHub 页点击 **Authorize**（需已启用 2FA）
+3. 填写表单：
+   - **GitHub URL**: `https://github.com/13923870749/HRAG-DocAudit`
+   - **Branch**: `master`
+   - **Anonymized repository ID**: `HRAG-DocAudit`
+   - **Terms to redact**（每行一条）:
+     ```
+     刘辉
+     Hui Liu
+     雷琼钰
+     Qiongyu Lei
+     冯锐
+     Rui Feng
+     37352366@qq.com
+     175543208@qq.com
+     2140747@qq.com
+     13923870749
+     Shenzhen Information Security Management Center
+     深圳
+     scutliu37352366
+     ```
+4. 点击 **Anonymize Repository**
+5. 验证：打开 https://anonymous.4open.science/r/HRAG-DocAudit 应能看到 `README.md` 和 `replication/`
 
-## 手动上传（约 2 分钟）
-
-1. 打开 [https://anonymous.4open.science/](https://anonymous.4open.science/)
-2. 点击 **New repository**，名称填 **`HRAG-DocAudit`**
-3. 选择 **Upload files** 或按页面提示关联 Git remote
-4. 上传整个 `HRAG-DocAudit-export/` 目录内容（或解压 `HRAG-DocAudit-export.zip` 后上传）
-
-## 或使用 Git（创建仓库后）
-
-```bash
-cd submission/eaai/HRAG-DocAudit-export
-git remote add origin https://anonymous.4open.science/r/HRAG-DocAudit.git
-git push -u origin master
-```
-
-## 包内可复现命令
+## 本地复现（无需 4open）
 
 ```bash
 cd replication
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-bash scripts/download_datasets.sh   # 下载 C3PA / ContractNLI
+bash scripts/download_datasets.sh
 python3 scripts/generate_cnas_holdout.py
 bash run_all.sh
 python3 run_tier2_baselines.py
 python3 scripts/generate_calibration_curve.py
-python3 scripts/sync_manuscript_from_results.py
 ```
 
-## 结果文件
+## 备用：ZIP 直传
 
-| 文件 | 内容 |
-|------|------|
-| `replication/results/tier2_baselines.json` | Self-RAG / ReAct C3PA 代理 + Tier-2 映射 |
-| `replication/results/calibration.json` | ECE 0.26 → 0.07（Platt hold-out） |
-| `replication/config/deployment_anchor.json` | 合作实验室 Tier-2 锚点指标 |
+若 OAuth 受阻，可将 `../HRAG-DocAudit-export.zip`（536 KB）作为 Editorial Manager 补充材料上传；正文链接仍建议使用 4open 匿名 URL。
+
+## 源仓库更新
+
+```bash
+cd HRAG-DocAudit-export
+git push github master
+# 然后在 4open 仪表盘点击 Update / Auto update
+```
